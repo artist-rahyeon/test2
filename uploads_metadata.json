@@ -1,0 +1,22 @@
+{
+    "qrcode.png": {
+        "title": "QR",
+        "category": "학습자료",
+        "filename": "qrcode.png",
+        "originalName": "qrcode.png",
+        "url": "/uploads/qrcode.png",
+        "size_bytes": 23789,
+        "timestamp": 1771831966.259515,
+        "date_str": "2026.02.23"
+    },
+    "grip_main.png": {
+        "title": "grip_main",
+        "category": "학습자료",
+        "filename": "grip_main.png",
+        "originalName": "grip_main.png",
+        "url": "/uploads/grip_main.png",
+        "size_bytes": 5085573,
+        "timestamp": 1771837105.506393,
+        "date_str": "2026.02.23"
+    }
+}

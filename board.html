@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIP - Resource Center</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="board-style.css">
+
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/variable/pretendardvariable.css" />
+</head>
+
+<body>
+    <!-- Global Navigation Bar (Apple Style) -->
+    <nav class="global-nav">
+        <div class="nav-content">
+            <a class="nav-logo" href="index.html">GRIP</a>
+            <div class="nav-links">
+                <a href="index.html">개요</a>
+                <a href="index.html#proof">기술 (INDEX)</a>
+                <a href="index.html#showcase">라인업</a>
+                <a href="index.html#ecosystem">시스템</a>
+                <a href="board.html" style="color: #fff; font-weight: 500;">자료실</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Resource Header -->
+    <header class="resource-header dark-mode">
+        <div class="content-wrapper">
+            <h1 class="resource-title fade-up">Resource Center.</h1>
+            <p class="resource-subtitle fade-up delay-100">GRIP이 제공하는 완벽한 학습 데이터와 프리미엄 자료들을 마음껏 탐색하세요.</p>
+        </div>
+    </header>
+
+    <!-- Resource List Section -->
+    <section class="resource-section dark-mode">
+        <div class="content-wrapper">
+            <div class="resource-list-container">
+                <!-- Header Row -->
+                <div class="resource-list-header">
+                    <div class="col-title">자료명</div>
+                    <div class="col-date">등록일</div>
+                    <div class="col-size">용량</div>
+                    <div class="col-action"></div>
+                </div>
+
+                <!-- Dynamic List Area -->
+                <div id="file-list" class="resource-list">
+                    <!-- Items will be injected here via board.js -->
+                    <div class="empty-state">로딩 중...</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Upload Modal Removed -->
+
+    <!-- Scripts -->
+    <script src="board.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,297 @@
+/* 
+ * GRIP Resource Board Additional Styles 
+ * Append this to the main style.css or link directly.
+ */
+
+/* Resource Header */
+.resource-header {
+    padding: 160px 0 80px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+}
+
+.resource-title {
+    font-size: 56px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.resource-subtitle {
+    font-size: 20px;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Resource List Layout */
+.resource-section {
+    padding: 60px 0 120px;
+    min-height: 60vh;
+}
+
+.resource-list-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.resource-list-header {
+    display: flex;
+    padding: 16px 24px;
+    border-bottom: 1px solid #424245;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.resource-item {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background 0.2s ease;
+    opacity: 0;
+    transform: translateY(10px);
+}
+
+.resource-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.resource-item:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+/* Columns */
+.col-title {
+    flex: 3;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.file-icon {
+    font-size: 24px;
+    color: var(--accent-blue);
+}
+
+.file-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}
+
+.col-date,
+.col-size {
+    flex: 1;
+    font-size: 15px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.col-action {
+    flex: 0.5;
+    text-align: right;
+}
+
+.download-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.download-btn:hover {
+    background: var(--accent-blue);
+    color: #fff;
+    transform: scale(1.05);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 80px 0;
+    color: var(--text-secondary);
+    font-size: 16px;
+}
+
+/* Upload Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.upload-modal-content {
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 48px;
+    width: 100%;
+    max-width: 500px;
+    position: relative;
+    transform: scale(0.95) translateY(20px);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+}
+
+.modal-overlay.active .upload-modal-content {
+    transform: scale(1) translateY(0);
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--text-secondary);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.close-modal-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--text-primary);
+}
+
+.upload-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+}
+
+#file-title {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.03);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    padding: 16px;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease;
+}
+
+#file-title:focus {
+    outline: none;
+    border-color: var(--accent-blue);
+}
+
+.file-upload-label {
+    display: block !important;
+    border: 2px dashed rgba(0, 0, 0, 0.15);
+    border-radius: 16px;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-upload-label:hover {
+    border-color: var(--accent-blue);
+    background: rgba(0, 113, 227, 0.05);
+}
+
+#file-upload {
+    display: none;
+}
+
+#file-name-display {
+    display: block;
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.submit-upload-btn {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 16px;
+}
+
+.upload-status {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    min-height: 20px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+    .resource-title {
+        font-size: 40px;
+    }
+
+    .col-date,
+    .col-size {
+        display: none;
+    }
+
+    /* Hide secondary info on narrow screens */
+    .file-name {
+        max-width: 200px;
+    }
+
+    .resource-item {
+        padding: 16px;
+    }
+
+    .upload-modal-content {
+        padding: 32px 24px;
+        margin: 20px;
+    }
+}

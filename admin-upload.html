@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIP Admin - Upload</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" crossorigin as="style"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- Global Style -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Admin Upload Specific Styles */
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top left, rgba(0, 113, 227, 0.04), transparent 50%),
+                radial-gradient(circle at bottom right, rgba(0, 113, 227, 0.03), transparent 50%);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            font-family: var(--font-stack);
+            padding: 80px 20px;
+            box-sizing: border-box;
+        }
+
+        .upload-container {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 50px 60px;
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), 0 10px 20px rgba(0, 0, 0, 0.02);
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            padding-bottom: 20px;
+        }
+
+        .admin-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .btn-logout {
+            font-size: 14px;
+            font-weight: 600;
+            color: #FF3B30;
+            background: rgba(255, 59, 48, 0.1);
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-logout:hover {
+            background: rgba(255, 59, 48, 0.15);
+        }
+
+        .input-group {
+            margin-bottom: 28px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #555555;
+            margin-bottom: 10px;
+            padding-left: 2px;
+        }
+
+        .input-group input[type="text"],
+        .input-group select {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-sizing: border-box;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+            background: #ffffff;
+        }
+
+        .input-group select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        .file-drop-area {
+            border: 2px dashed rgba(0, 0, 0, 0.15);
+            border-radius: 20px;
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(250, 250, 250, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .file-drop-area:hover,
+        .file-drop-area.dragover {
+            background: rgba(0, 113, 227, 0.05);
+            border-color: var(--accent-blue);
+        }
+
+        .file-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+        }
+
+        .file-msg {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333333;
+            margin-bottom: 8px;
+        }
+
+        .file-sub-msg {
+            font-size: 13px;
+            color: #888888;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .selected-file {
+            margin-top: 16px;
+            padding: 16px 20px;
+            background: rgba(0, 113, 227, 0.08);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--accent-blue);
+            display: none;
+            margin-bottom: 30px;
+        }
+
+        .remove-file {
+            cursor: pointer;
+            color: #FF3B30;
+            font-size: 18px;
+            transition: transform 0.2s;
+        }
+
+        .remove-file:hover {
+            transform: scale(1.2);
+        }
+
+        .btn-upload {
+            width: 100%;
+            padding: 18px;
+            background: var(--text-primary);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: -0.01em;
+        }
+
+        .btn-upload:hover {
+            transform: scale(1.02);
+            background: #1a1a1a;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-upload:active {
+            transform: scale(0.98);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .spinner {
+            width: 44px;
+            height: 44px;
+            border: 4px solid rgba(0, 113, 227, 0.2);
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 40px 16px;
+            }
+
+            .upload-container,
+            .uploaded-list-container {
+                padding: 40px 30px;
+            }
+        }
+
+        /* Uploaded List Styling */
+        .uploaded-list-container {
+            width: 100%;
+            max-width: 500px;
+            margin: 30px auto 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .list-header {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1d1d1f;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #ebebeb;
+        }
+
+        .file-item:last-child {
+            border-bottom: none;
+        }
+
+        .file-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .file-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .file-meta {
+            font-size: 13px;
+            color: #86868b;
+        }
+
+        .btn-delete {
+            background: #FF3B30;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-delete:hover {
+            background: #D70015;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="upload-container">
+        <div class="admin-header">
+            <div class="admin-title">Resource Upload</div>
+            <button class="btn-logout" id="btn-logout">로그아웃</button>
+        </div>
+
+        <form id="upload-form">
+            <div class="input-group">
+                <label for="doc-title">자료 제목</label>
+                <input type="text" id="doc-title" placeholder="예: [기출 해부] 2026학년도 수능 대비 분석본" required>
+            </div>
+
+            <div class="input-group">
+                <label for="doc-type">자료 구분</label>
+                <select id="doc-type" required>
+                    <option value="" disabled selected>구분을 선택하세요</option>
+                    <option value="기출해설">기출해설</option>
+                    <option value="모의고사">모의고사</option>
+                    <option value="핵심개념">핵심개념</option>
+                    <option value="학습자료">학습자료</option>
+                </select>
+            </div>
+
+            <!-- Drag and Drop Box -->
+            <div class="file-drop-area" id="drop-area">
+                <div class="file-icon">📄</div>
+                <div class="file-msg">클릭하여 파일을 첨부하거나 이곳으로 끌어오세요.</div>
+                <div class="file-sub-msg">PDF 파일 권장 (최대 50MB)</div>
+                <input type="file" id="file-input" accept=".pdf,.doc,.docx,.hwp,.zip" required>
+            </div>
+
+            <!-- Selected File Info (hidden by default) -->
+            <div class="selected-file" id="selected-file">
+                <span id="file-name">선택된 파일 없음</span>
+                <span class="remove-file" id="remove-file" title="파일 취소">✕</span>
+            </div>
+
+            <button type="submit" class="btn-upload" id="btn-submit">파일 업로드</button>
+        </form>
+    </div>
+
+    <!-- Uploaded Files Management -->
+    <div class="uploaded-list-container">
+        <div class="list-header">
+            <span>등록된 자료 관리</span>
+            <span id="file-count" style="font-size: 14px; color: #86868b;">0개</span>
+        </div>
+        <div id="file-list-wrap">
+            <div style="text-align: center; color: #86868b; padding: 20px 0;">로딩 중...</div>
+        </div>
+    </div>
+
+    <!-- Loading UI Box -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="spinner"></div>
+        <div style="font-weight: 700; font-size: 18px; color: #1d1d1f; margin-bottom: 8px;">자료를 업로드하는 중입니다...</div>
+        <div style="font-size: 14px; color: #86868b;">창을 닫거나 새로고침하지 마세요.</div>
+    </div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const selectedFileDiv = document.getElementById('selected-file');
+        const fileNameSpan = document.getElementById('file-name');
+        const removeFileBtn = document.getElementById('remove-file');
+
+        const uploadForm = document.getElementById('upload-form');
+        const loadingOverlay = document.getElementById('loading-overlay');
+        const btnLogout = document.getElementById('btn-logout');
+
+        // ==== 1. Firebase Auth Security Check ====
+        // Ensure admin token exists in localStorage
+        const adminToken = localStorage.getItem("adminToken");
+        if (!adminToken) {
+            alert("접근 권한이 없습니다. 다시 로그인 해주세요.");
+            window.location.href = "admin-login.html";
+        }
+
+        btnLogout.addEventListener('click', () => {
+            localStorage.removeItem("adminToken");
+            window.location.href = 'admin-login.html';
+        });
+
+        // ==== 2. File Drag & Drop Handlers ====
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault(); e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.add('dragover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => dropArea.classList.remove('dragover'), false);
+        });
+
+        dropArea.addEventListener('drop', handleDrop, false);
+        dropArea.addEventListener('click', () => fileInput.click()); // Click to browse
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files);
+        }
+
+        fileInput.addEventListener('change', function () {
+            handleFiles(this.files);
+        });
+
+        function handleFiles(files) {
+            if (files.length > 0) {
+                const file = files[0];
+
+                // Update fileInput object manually with DataTransfer
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(file);
+                fileInput.files = dataTransfer.files;
+
+                // Switch UI
+                dropArea.style.display = 'none';
+                selectedFileDiv.style.display = 'flex';
+                fileNameSpan.textContent = file.name;
+            }
+        }
+
+        removeFileBtn.addEventListener('click', () => {
+            fileInput.value = '';
+            selectedFileDiv.style.display = 'none';
+            dropArea.style.display = 'block';
+        });
+
+        // ==== 3. Form Submit to FastAPI Backend ====
+        uploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert("파일을 먼저 첨부해주세요!");
+                return;
+            }
+
+            loadingOverlay.style.display = 'flex';
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            formData.append("title", document.getElementById("doc-title").value);
+            formData.append("category", document.getElementById("doc-type").value);
+
+            try {
+                // Send Request to Fast API built Server
+                const response = await fetch("/api/upload", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${adminToken}`
+                    },
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('자료 업로드가 성공적으로 완료되었습니다! [' + data.title + ']');
+                    uploadForm.reset();
+                    removeFileBtn.click();
+                } else {
+                    alert(`업로드 실패: ${data.detail || '알 수 없는 오류'}`);
+                    if (response.status === 403 || response.status === 401) {
+                        // Token might be expired or invalid
+                        localStorage.removeItem("adminToken");
+                        window.location.href = "admin-login.html";
+                    }
+                }
+            } catch (error) {
+                console.error("Upload error:", error);
+                alert("서버 연결에 실패했습니다. 백엔드가 구동 중인지 확인하세요.");
+            } finally {
+                loadingOverlay.style.display = 'none';
+            }
+        });
+
+        // ==== 4. Load & Delegate Deletion of Existing Files ====
+        const fileListWrap = document.getElementById('file-list-wrap');
+        const fileCountSpan = document.getElementById('file-count');
+
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        async function loadUploadedFiles() {
+            try {
+                const response = await fetch("/api/files");
+                if (!response.ok) throw new Error("Failed to load files");
+                const files = await response.json();
+
+                fileCountSpan.textContent = `${files.length}개`;
+
+                if (files.length === 0) {
+                    fileListWrap.innerHTML = '<div style="text-align: center; color: #86868b; padding: 20px 0;">등록된 자료가 없습니다.</div>';
+                    return;
+                }
+
+                fileListWrap.innerHTML = files.map(f => {
+                    const safeCategory = escapeHtml(f.category);
+                    const safeTitle = escapeHtml(f.title);
+                    return `
+                        <div class="file-item" data-filename="${f.filename}">
+                            <div class="file-info">
+                                <div class="file-title">[${safeCategory}] ${safeTitle}</div>
+                                <div class="file-meta">${f.size} | ${f.date}</div>
+                            </div>
+                            <button class="btn-delete" data-filename="${f.filename}">삭제</button>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                fileListWrap.innerHTML = '<div style="text-align: center; color: red; padding: 20px 0;">자료 목록을 불러오지 못했습니다.</div>';
+            }
+        }
+
+        // Deletion Event Delegation
+        fileListWrap.addEventListener('click', async (e) => {
+            if (e.target.classList.contains('btn-delete')) {
+                const filename = e.target.dataset.filename;
+
+                if (!confirm(`정말 "${filename}" 파일을 삭제하시겠습니까? (복구 불가)`)) {
+                    return;
+                }
+
+                e.target.textContent = "삭제중...";
+                e.target.disabled = true;
+
+                try {
+                    const response = await fetch(`/api/files/${encodeURIComponent(filename)}`, {
+                        method: 'DELETE',
+                        headers: {
+                            "Authorization": `Bearer ${adminToken}`
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        loadUploadedFiles(); // Refresh list
+                    } else {
+                        alert(`삭제 실패: ${data.detail || '알 수 없는 오류'}`);
+                        e.target.textContent = "삭제";
+                        e.target.disabled = false;
+                    }
+                } catch (error) {
+                    alert("삭제 중 에러가 발생했습니다.");
+                    e.target.textContent = "삭제";
+                    e.target.disabled = false;
+                }
+            }
+        });
+
+        // Initial Load
+        loadUploadedFiles();
+    </script>
+</body>
+
+</html>

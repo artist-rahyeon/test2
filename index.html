@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-LB77ZGT0NT"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-LB77ZGT0NT');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIP - The Data Standard</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- PDF.js 라이브러리 (원본다운 방지용 순수 이미지 렌더링) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // PDF.js worker 설정
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <!-- Pretendard Font -->
+    <link rel="stylesheet" as="style" crossorigin
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+    <link rel="stylesheet" href="style.css?v=2">
+    <link rel="stylesheet" href="board-style.css?v=2">
+
+    <!-- 보안 방어막 스타일 (인쇄, 드래그 방지) -->
+    <style>
+        /* 1. 드래그 밎 텍스트 선택 금지 */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        /* 2. 인쇄 차단 (프린트 시 화면 내용을 모조리 하얗게 숨김) */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            body::after {
+                content: "교재 저작권 보호를 위해 인쇄가 차단되었습니다.";
+                visibility: visible;
+                display: block;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                font-size: 20px;
+                font-weight: bold;
+            }
+        }
+
+        /* 커스텀 PDF 뷰어 캔버스 설정 */
+        #pdf-render-canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            background-color: white;
+        }
+
+        /* PDF 뷰어 컨트롤바 (이전/다음 페이지) */
+        .pdf-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom-left-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+
+        .pdf-controls button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: background 0.2s;
+        }
+
+        .pdf-controls button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        #page-num-display {
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* 모달 크기 맞춤 (넘치지 않게 조절) */
+        .preview-modal-content {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .preview-title {
+            padding: 20px;
+            margin: 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scrollable-preview-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #111;
+            /* 뷰어 배경색 */
+        }
+    </style>
+</head>
+
+<body oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+
+    <!-- GNB -->
+    <nav class="global-nav blur-bg">
+        <div class="nav-content">
+            <a href="index.html" class="nav-logo">GRIP</a>
+            <div class="nav-links">
+                <a href="#manifesto">개요</a>
+                <a href="#proof">기술 (INDEX)</a>
+                <a href="#showcase">라인업</a>
+                <a href="#ecosystem">시스템</a>
+                <a href="#contact">Q&A</a>
+                <a href="board.html">자료실</a>
+                <a href="#outro" class="nav-btn">GRIP X 수학비서</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Section 1: HERO -->
+    <section id="hero" class="hero-section">
+        <div class="hero-sticky">
+            <h1 class="hero-title" id="hero-title">GRIP</h1>
+            <div class="hero-teaser" id="hero-teaser">
+                <p>143,987개의 데이터로 설계한</p>
+                <p>첫 번째 문제집</p>
+            </div>
+
+            <div class="hero-sub-text">
+                <p class="hide-on-mobile">감(感)으로 만든 문제는 단 한 문항도 없습니다.</p>
+                <p>오직 출제 데이터만으로,<br class="mobile-br"> 가장 완벽한 한 권을 완성했습니다.</p>
+            </div>
+        </div>
+
+        <div class="hero-sticky-container">
+            <div class="sticky-image-wrapper">
+                <div class="hero-main-image-wrap" id="hero-showcase">
+                    <!-- Placeholder for the book silhouette image -->
+                    <img src="grip_white.png" alt="GRIP Main Silhouette" class="hero-main-image">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 2: THE PARADIGM SHIFT -->
+    <section id="manifesto" class="manifesto-container">
+        <div class="manifesto-sticky">
+            <p class="manifesto-line">개념을 다 외워도<br>점수가 오르지 않는다면</p>
+            <p class="manifesto-line">기출문제를 5회독 하고도<br>변형 문제에 무너진다면</p>
+            <p class="manifesto-line highlight">당신의 노력이 부족한 것이 아닙니다</p>
+            <p class="manifesto-line"><strong>'우선순위가 없는 문제집'</strong> 때문입니다</p>
+        </div>
+    </section>
+
+
+
+    <!-- Section 3: THE PROOF -->
+    <section id="proof" class="engine-section">
+        <div class="content-wrapper">
+            <div class="engine-header fade-up">
+                <h2 class="engine-title">시험에 나올 문제만<br>남기는 기술</h2>
+            </div>
+
+            <!-- Massive Typography Block -->
+            <div class="typography-showcase text-center fade-up delay-100">
+                <div class="impact-text-block" style="margin-bottom: 150px;">
+                    <p class="impact-main">시중의 모든 교재를 분석했습니다.</p>
+                    <p class="impact-main">그리고, <span style="color:#007aff;">'사각지대'</span>를 발견했습니다.</p>
+                </div>
+
+                <div class="impact-text-block" style="margin-bottom: 200px;">
+                    <p class="impact-sub">수백만 개의 내신 데이터.<br>우리는 모집단에 가까운 표본을 모두 확인했습니다.</p>
+                </div>
+
+                <!-- 3. 새로운 벤토 박스(Bento Box) 영역 -->
+                <div class="proof-bento-grid fade-up delay-200">
+                    <!-- 상단 큰 박스 -->
+                    <div class="proof-bento-card large">
+                        <div class="bento-inner-content">
+                            <span class="proof-number">143,987</span>
+                            <span class="proof-label">분석 완료된 문항 수</span>
+                            <p class="bento-desc">단순한 기출 모음이 아닙니다. 전국 1,000여 개 고등학교의 최신 기출 트렌드를 딥러닝으로 분석하여, 오직 시험에 나올
+                                '결정적 문항'만을 추출해낸 압도적인 데이터베이스입니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 하단 좌측 박스 -->
+                    <div class="proof-bento-card small left-card">
+                        <div class="bento-inner-content">
+                            <span class="bento-small-label">전국 학교 기출 해부</span>
+                            <span class="bento-small-number">53%</span>
+                            <p class="bento-desc-small">수백만 개의 내신 표본을 수집하여 전국 고등학교 기출 패턴의 절반 이상을 완벽하게 해독했습니다.</p>
+                        </div>
+                    </div>
+
+                    <!-- 하단 우측 박스 (지도 배경) -->
+                    <div class="proof-bento-card small right-card map-bg">
+                        <div class="bento-inner-content">
+                            <span class="bento-small-label">주요 학군 적중률</span>
+                            <span class="bento-small-number">90%</span>
+                            <p class="bento-desc-small">강남, 서초, 목동, 중계 등 대한민국 교육 특구의 가장 까다로운 내신 시험까지 빈틈없이 커버합니다.</p>
+                        </div>
+                        <img src="korea_tech_map.png" alt="Map Background" class="bento-map-img">
+                    </div>
+
+                    <!-- 하단 대형 박스 (INDEX 시스템 복구) -->
+                    <div class="proof-bento-card large index-card"
+                        style="flex-direction: row; align-items: center; justify-content: space-between; gap: 40px; text-align: left;">
+                        <!-- 텍스트 영역 -->
+                        <div class="bento-inner-content" style="flex: 1; align-items: flex-start;">
+                            <span class="proof-label" style="color: #007aff; margin-bottom: 8px;">수학비서 INDEX 시스템</span>
+                            <h3 class="bento-title"
+                                style="font-size: 40px; font-weight: 800; color: #1d1d1f; margin: 0 0 16px 0; letter-spacing: -1px;">
+                                '오답'이 아닌 '출제 확률' 기준</h3>
+                            <p class="bento-desc" style="max-width: 100%; text-align: left; margin: 0;">
+                                내가 틀린 문제가 시험에 나오지 않는다면 그 오답 노트는 무용지물입니다.<br class="hide-on-mobile">
+                                GRIP은 수학비서만의 고도화된 '인덱스 시스템'을 통해 출제되지 않는 낡은 문제를 걷어내고, 1등급 변별력을 가르는 핵심 문항만을 남겼습니다.
+                            </p>
+                        </div>
+
+                        <!-- 로고 영역 -->
+                        <div class="index-logo-area"
+                            style="background: transparent; padding: 0; min-width: auto; flex-shrink: 0; transform: scale(0.9);">
+                            <span class="logo-title" style="margin-bottom: 0;">INDEX</span>
+                            <div class="asterisk-icon" style="font-size: 120px; color: #007aff; margin: 10px 0;">❋</div>
+                            <span class="logo-text" style="margin-top: 0;">수학비서</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Section 4: THE SHOWCASE -->
+    <section id="showcase" class="showcase-section" style="padding-top: 80px;">
+        <div class="content-wrapper">
+
+            <!-- Transition Header for Showcase -->
+            <div class="showcase-intro fade-up">
+                <h2 class="showcase-intro-title">완벽한 실전을 위한<br>두 가지 라인업</h2>
+                <p class="showcase-intro-desc">당신의 학습 단계에 맞는 최적의 교재를 선택하세요.</p>
+            </div>
+
+            <!-- Custom Tab Navigation -->
+            <div class="showcase-tabs fade-up delay-100">
+                <button class="tab-btn active" data-target="inception">GRIP INCEPTION</button>
+                <button class="tab-btn" data-target="pattern">GRIP PATTERN</button>
+            </div>
+
+            <!-- Showcase Content Container -->
+            <div class="showcase-content-area">
+
+                <!-- INCEPTION TAB CONTENT -->
+                <div id="tab-inception" class="showcase-panel active">
+                    <div class="showcase-split">
+
+                        <!-- Left: Visual -->
+                        <div class="showcase-visual fade-up delay-100">
+                            <div class="spotlight blue"></div>
+                            <img src="grip_white.png" alt="GRIP INCEPTION Book" class="showcase-book-img">
+                        </div>
+
+                        <!-- Right: Text & Actions -->
+                        <div class="showcase-text fade-up delay-200">
+                            <h3 class="panel-title">개념의 뼈대를 세우다.<br>INCEPTION</h3>
+                            <p class="panel-desc">
+                                교과서를 단순 나열한 낡은 개념서가 아닙니다.<br>
+                                데이터가 증명한 <strong>'출제 우선순위'</strong>에 따라 필수 개념만 엄선했습니다.
+                            </p>
+
+                            <ul class="panel-features">
+                                <li><span>✔️</span> 출제 확률 기반 필수 개념 구조화</li>
+                                <li><span>✔️</span> 개념 ▸ 이해 ▸ 적용 ▸ 정리의 4단계 실전 루프</li>
+                            </ul>
+
+                            <button class="btn-preview open-preview-modal" data-preview-type="inception">
+                                📖 INCEPTION 내부 미리보기
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- PATTERN TAB CONTENT -->
+                <div id="tab-pattern" class="showcase-panel">
+                    <div class="showcase-split">
+
+                        <!-- Left: Visual -->
+                        <div class="showcase-visual">
+                            <div class="spotlight red"></div>
+                            <!-- Assuming you might have a different image, using grip_main for now -->
+                            <img src="grip_white.png" alt="GRIP PATTERN Book" class="showcase-book-img pattern-tint">
+                        </div>
+
+                        <!-- Right: Text & Actions -->
+                        <div class="showcase-text">
+                            <h3 class="panel-title">적용으로 실전을 끝내다.<br>PATTERN</h3>
+                            <p class="panel-desc">
+                                무작위로 섞인 기출문제에 시간 낭비하지 마세요.<br>
+                                실제 출제 데이터가 검증한 <strong>'핵심 패턴'</strong>만 입체적으로 분석합니다.
+                            </p>
+
+                            <ul class="panel-features">
+                                <li><span>✔️</span> 실제 출제 데이터 기반 실전 유형 설계</li>
+                                <li><span>✔️</span> A ▸ B ▸ C 난이도별 정교한 상승 시스템</li>
+                            </ul>
+
+                            <button class="btn-preview open-preview-modal" data-preview-type="pattern">
+                                📖 PATTERN 내부 미리보기
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div> <!-- /.showcase-content-area -->
+
+        </div>
+    </section>
+
+    <!-- Section 5: THE WORKFLOW -->
+    <section id="workflow" class="workflow-section dark-mode">
+        <div class="content-wrapper">
+            <h2 class="section-title fade-up">The Workflow</h2>
+            <div class="workflow-steps">
+                <div class="step-item fade-up">
+                    <span class="step-num">01</span>
+                    <h3>Solve</h3>
+                    <p>GRIP 교재로<br>문제를 풉니다.</p>
+                </div>
+                <div class="step-line fade-up delay-100"></div>
+                <div class="step-item fade-up delay-100">
+                    <span class="step-num">02</span>
+                    <h3>Scan</h3>
+                    <p>앱으로 답안을<br>스캔합니다.</p>
+                </div>
+                <div class="step-line fade-up delay-200"></div>
+                <div class="step-item fade-up delay-200">
+                    <span class="step-num">03</span>
+                    <h3>Analyze</h3>
+                    <p>취약점을 분석하고<br>쌍둥이 문제를 받습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 6: BEYOND THE BOOK (Ecosystem) -->
+    <section id="ecosystem" class="grid-section dark-mode">
+        <div class="content-wrapper">
+            <div class="ecosystem-header fade-up">
+                <h2 class="section-title">GRIP Ecosystem</h2>
+                <h3 class="ecosystem-subtitle" style="font-size: 32px; font-weight: 700; margin-bottom: 10px;">책 한 권, 그
+                    이상의 교육 인프라</h3>
+                <p class="section-subtitle">GRIP을 선택하는 순간, 수학비서의 강력한 시스템이 함께합니다.</p>
+            </div>
+
+            <div class="bento-grid">
+                <!-- Box 1 -->
+                <div class="bento-item fade-up text-center">
+                    <div class="bento-content">
+                        <div class="bento-icon-wrapper">
+                            <span class="bento-icon">📄</span> <!-- Placeholder for HWP icon -->
+                        </div>
+                        <p>100% 한글 원본 파일 제공<br>나만의 학원 교재로 무한 편집</p>
+                    </div>
+                </div>
+
+                <!-- Box 2 -->
+                <div class="bento-item fade-up delay-100 text-center">
+                    <div class="bento-content">
+                        <div class="bento-icon-wrapper">
+                            <span class="bento-icon">×2</span>
+                        </div>
+                        <p>전 문항 2배수 쌍둥이 문제<br>빈틈을 허용하지 않는 오답 관리</p>
+                    </div>
+                </div>
+
+                <!-- Box 3 -->
+                <div class="bento-item fade-up delay-200 text-center">
+                    <div class="bento-content">
+                        <div class="bento-icon-wrapper">
+                            <span class="bento-icon">📊</span> <!-- Placeholder for PPT icon -->
+                        </div>
+                        <p>문항 클릭 한 번에<br>고화질 수업용 PPT 자동 생성</p>
+                    </div>
+                </div>
+
+                <!-- Box 4 -->
+                <div class="bento-item fade-up delay-300 text-center">
+                    <div class="bento-content">
+                        <div class="bento-icon-wrapper">
+                            <span class="bento-icon">📱</span> <!-- Placeholder for App icon -->
+                        </div>
+                        <p>QR코드 하나로<br>자동 채점부터 취약점 리포트까지</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 7: OUTRO -->
+    <section id="outro" class="outro-section">
+        <div class="content-wrapper">
+            <div class="outro-content fade-up">
+                <h2 class="outro-title">수많은 문제집 사이에서 길을 잃지 마세요.</h2>
+                <p class="outro-subtitle"
+                    style="font-size: 24px; color: #86868b; margin-top: 20px; margin-bottom: 60px;">제대로 설계된 '단 하나'의 교재,
+                    GRIP입니다.</p>
+
+                <div class="outro-buttons" style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://www.mathsecr.com/" target="_blank" class="btn-cta primary"
+                        style="background: var(--accent-blue); color: white; padding: 18px 40px; border-radius: 99px; font-weight: 600; font-size: 18px; border: none; cursor: pointer; transition: transform 0.2s ease; text-decoration: none; display: flex; align-items: center; justify-content: center;">수학비서에서
+                        GRIP 만나보기</a>
+                    <a href="https://open.kakao.com/o/gX0v4rWe" target="_blank" class="btn-cta outline"
+                        style="background: transparent; color: var(--text-primary); border: 2px solid var(--text-primary); padding: 18px 40px; border-radius: 99px; font-weight: 600; font-size: 18px; text-decoration: none; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;">도입
+                        및 제휴 문의</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact-section">
+        <div class="content-wrapper">
+            <h2 class="section-title fade-up">Questions?</h2>
+            <div class="contact-content fade-up">
+                <p class="contact-desc">궁금한 점이 있으신가요?<br>언제든 편하게 문의해주세요.</p>
+                <a href="https://open.kakao.com/o/szPEyjai" target="_blank" class="kakao-btn">
+                    <span class="kakao-icon">💬</span> 카카오톡 1:1 문의하기
+                </a>
+                <div class="qr-container">
+                    <img src="qrcode.png" alt="KakaoTalk QR Code" class="qr-code">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <p>Designed by YUNSUNG</p>
+            <div class="footer-links">
+                <a href="#">이용약관</a>
+                <a href="#">개인정보처리방침</a>
+            </div>
+            <p class="copyright">Copyright © 2026 GRIP. All rights reserved</p>
+        </div>
+    </footer>
+
+    <!-- Fullscreen Preview Modal -->
+    <div id="preview-modal" class="fullscreen-modal">
+        <div class="modal-backdrop"></div>
+        <div class="preview-modal-content">
+            <button class="preview-close-btn">&times;</button>
+
+            <!-- Inception Preview Content -->
+            <div id="preview-inception" class="preview-pane"
+                style="display: flex; flex-direction: column; height: 100%;">
+                <h3 class="preview-title">INCEPTION 내부 샘플</h3>
+
+                <!-- 원본 다운로드 불가 전용 캔버스 뷰어 -->
+                <div class="scrollable-preview-area" style="padding: 20px;">
+                    <canvas id="pdf-render-canvas"></canvas>
+                </div>
+
+                <!-- 하단 컨트롤 패널 -->
+                <div class="pdf-controls">
+                    <button id="prev-page">◀ 이전 페이지</button>
+                    <span id="page-num-display">페이지 로딩 중...</span>
+                    <button id="next-page">다음 페이지 ▶</button>
+                </div>
+            </div>
+
+            <!-- Pattern Preview Content -->
+            <div id="preview-pattern" class="preview-pane">
+                <h3 class="preview-title">PATTERN 내부 샘플</h3>
+                <div class="scrollable-preview-area">
+                    <!-- Placeholders for high-res inner pages -->
+                    <div class="mock-page">
+                        <div class="mock-page-header" style="border-bottom-color: var(--accent-red);">유형 분석</div>
+                        <div class="mock-page-body">여기에 고화질 내지 이미지가 들어갑니다. 스와이프/스크롤하여 내용을 확인하세요.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=modal_debug"></script>
+</body>
+
+</html>

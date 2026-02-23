@@ -1,0 +1,18 @@
+[
+    {
+        "id": 1,
+        "title": "테스트용 txt 파일",
+        "filename": "test.txt",
+        "originalName": "test.txt",
+        "size": "1 KB",
+        "date": "2026.02.22"
+    },
+    {
+        "id": 2,
+        "title": "그립 메인 표지",
+        "filename": "grip_main.png",
+        "originalName": "grip_main.png",
+        "size": "5.1 MB",
+        "date": "2026.02.22"
+    }
+]

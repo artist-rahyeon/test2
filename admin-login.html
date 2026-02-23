@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRIP Admin - Login</title>
+    <!-- Fonts -->
+    <link rel="stylesheet" crossorigin as="style"
+        href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <!-- Global Style -->
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Admin Login Specific Styles */
+        body {
+            background-color: var(--bg-color);
+            background-image: radial-gradient(circle at top right, rgba(0, 113, 227, 0.05), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(0, 113, 227, 0.03), transparent 40%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: var(--font-stack);
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            padding: 60px 50px;
+            border-radius: 30px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.04), 0 10px 20px rgba(0, 0, 0, 0.02);
+            width: 100%;
+            max-width: 440px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .admin-brand {
+            font-size: 38px;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            letter-spacing: -0.03em;
+        }
+
+        .admin-subtitle {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555555;
+            margin-bottom: 10px;
+            padding-left: 2px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-sizing: border-box;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.15);
+        }
+
+        .input-group input::placeholder {
+            color: #999999;
+            font-weight: 400;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background: var(--text-primary);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 16px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            letter-spacing: -0.01em;
+        }
+
+        .btn-login:hover {
+            transform: scale(1.02);
+            background: #1a1a1a;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .error-message {
+            color: #FF3B30;
+            font-size: 13px;
+            margin-top: 16px;
+            min-height: 20px;
+            display: none;
+            /* hidden by default */
+        }
+
+        /* Go back link */
+        .go-back {
+            display: inline-block;
+            margin-top: 30px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .go-back:hover {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="admin-brand">GRIP</div>
+
+        <form id="login-form">
+            <div class="input-group">
+                <label for="admin-id">ID</label>
+                <input type="email" id="admin-id" placeholder="admin@example.com" required autocomplete="username">
+            </div>
+
+            <div class="input-group">
+                <label for="admin-pw">Password</label>
+                <input type="password" id="admin-pw" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn-login">로그인</button>
+            <div id="error-msg" class="error-message">아이디 또는 비밀번호를 확인해주세요.</div>
+        </form>
+
+        <a href="index.html" class="go-back">← 메인 페이지로 돌아가기</a>
+    </div>
+
+    <!-- Firebase SDK (Modular V9) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+
+        // ==========================================
+        // 🔥 사용자가 직접 채워 넣어야 할 Firebase Config 설정
+        // ==========================================
+        // 🔥 보안 아키텍처: 백엔드에서 환경변수로 숨긴 Firebase Config를 안전하게 가져옵니다.
+        let app, auth;
+
+        async function initFirebase() {
+            try {
+                const response = await fetch('/api/config');
+                const firebaseConfig = await response.json();
+
+                // 만약 API 키가 비어있다면 에러 처리
+                if (!firebaseConfig.apiKey) {
+                    throw new Error("서버 환경변수(.env)에 Firebase 키가 설정되지 않았습니다.");
+                }
+
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                console.log("Firebase App Initialized Securely.");
+
+                // 로그인 폼 활성화 (초기화 전까지 버튼 비활성화 등 추가 가능)
+                document.getElementById('login-btn').disabled = false;
+            } catch (error) {
+                console.error("Firebase Initialization Error:", error);
+                const errorMsg = document.getElementById('error-msg');
+                errorMsg.textContent = error.message;
+                errorMsg.style.display = 'block';
+            }
+        }
+
+        // 페이지 로드 시 Firebase 동적 초기화 시작
+        initFirebase();
+
+        const loginForm = document.getElementById('login-form');
+        const errorMsg = document.getElementById('error-msg');
+        const emailInput = document.getElementById('admin-id');
+        const pwInput = document.getElementById('admin-pw');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            errorMsg.style.display = 'none'; // reset error message
+
+            if (!auth) {
+                errorMsg.textContent = "Firebase 설정이 완료되지 않았습니다. 관리자에게 문의하세요.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            const email = emailInput.value.trim();
+            const password = pwInput.value;
+
+            try {
+                // Firebase Login Request
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // Get JWT Token to use for Backend API
+                const idToken = await user.getIdToken();
+
+                // Store token in localStorage for the upload page
+                localStorage.setItem("adminToken", idToken);
+
+                // Redirect to Upload Dashboard
+                window.location.href = 'admin-upload.html';
+
+            } catch (error) {
+                console.error("Login failed:", error.code, error.message);
+                errorMsg.textContent = "아이디 또는 비밀번호를 확인해주세요.";
+                errorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>
